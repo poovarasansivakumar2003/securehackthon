@@ -34,3 +34,4 @@ We welcome contributions from the community! Whether you're a cybersecurity expe
 ---
 
 Thank you for choosing CyberGuard Training Platform! Get started by exploring our modules, taking on challenges, and joining a team to level up your cybersecurity skills.
+Additional code and features are need to be updated and these files will be embedded in EJS template engine. Stay tuned!.
