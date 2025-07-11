@@ -1,4 +1,4 @@
-# CyberGuard Training Platform
+# CyberGuard Training Platform  Deployed- https://securathon.onrender.com/
 
 ## Overview
 The *CyberGuard Training Platform* is an interactive, gamified environment designed to teach users essential cybersecurity skills. It offers various learning modules, real-world simulations, and quests to help individuals become proficient in both offensive and defensive security techniques.
