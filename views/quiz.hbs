@@ -1,0 +1,247 @@
+{{> header}}
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="quests-grid">
+        <div class="card daily-quest">
+            <div class="quest-header">
+                <h3>Daily Challenge</h3>
+                <span class="time-remaining">23:45:12</span>
+            </div>
+            <p>Complete 3 phishing identification exercises</p>
+            <div class="quest-progress">
+                <div class="progress-bar">
+                    <div class="progress" style="width: 33%">1/3</div>
+                </div>
+            </div>
+            <button class="btn-primary">Start Quest</button>
+        </div>
+        <!-- Add more quests -->
+    </div>
+    <div class="quiz-container">
+        <h1>Cybersecurity Quiz</h1>
+        <div class="question">1. What is a firewall?</div>
+        <div class="options"><button class="option">A physical wall that protects servers</button><button
+                class="option">A network security device that monitors traffic</button><button class="option">A type of
+                computer virus</button><button class="option">A backup storage device</button></div>
+        <div class="result"></div>
+        <button class="next-btn" style="display: none;">Next Question</button>
+        <button class="submit-btn" style="display: none;">Submit Quiz</button>
+        <button class="restart-btn" style="display: none;">Restart Quiz</button>
+        <div class="score">Score: 0/1</div>
+    </div>
+</main>
+
+<script>
+    const userId = "specificUserId"; // Replace with actual user ID
+    const questions = [
+        {
+            question: "What is a firewall?",
+            options: [
+                "A physical wall that protects servers",
+                "A network security device that monitors traffic",
+                "A type of computer virus",
+                "A backup storage device"
+            ],
+            correct: 1
+        },
+        {
+            question: "What is phishing?",
+            options: [
+                "A type of fish",
+                "An attempt to obtain sensitive information",
+                "A computer security measure",
+                "A network protocol"
+            ],
+            correct: 1
+        },
+        {
+            question: "What does SSL stand for?",
+            options: [
+                "Secure Sockets Layer",
+                "System Security Layer",
+                "Simple Sockets Layer",
+                "Secure Server Layer"
+            ],
+            correct: 0
+        },
+        {
+            question: "What is malware?",
+            options: [
+                "Software that damages or disrupts systems",
+                "Hardware used for security",
+                "A method of data encryption",
+                "A type of internet browser"
+            ],
+            correct: 0
+        },
+        {
+            question: "What is two-factor authentication?",
+            options: [
+                "A method of encrypting files",
+                "A security process that requires two forms of verification",
+                "A network security measure",
+                "A method of data backup"
+            ],
+            correct: 1
+        },
+        {
+            question: "What is a DDoS attack?",
+            options: [
+                "A method of data protection",
+                "A type of cyber attack that overwhelms a system",
+                "A software installation process",
+                "A form of network security"
+            ],
+            correct: 1
+        },
+        {
+            question: "What does VPN stand for?",
+            options: [
+                "Virtual Private Network",
+                "Virtual Public Network",
+                "Variable Protected Network",
+                "Virtual Protected Network"
+            ],
+            correct: 0
+        },
+        {
+            question: "What is social engineering?",
+            options: [
+                "A method of network design",
+                "Manipulating people into divulging confidential information",
+                "A type of software development",
+                "An engineering discipline"
+            ],
+            correct: 1
+        },
+        {
+            question: "What is a brute force attack?",
+            options: [
+                "An attack using physical force",
+                "A method of gaining access by trying many passwords",
+                "A type of email phishing",
+                "A method of network design"
+            ],
+            correct: 1
+        },
+        {
+            question: "What is vulnerability scanning?",
+            options: [
+                "Medical scanning",
+                "Checking for security weaknesses",
+                "A type of malware",
+                "A backup system"
+            ],
+            correct: 1
+        }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let questionAnswered = false;
+
+    function initQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        questionAnswered = false;
+        loadQuestion();
+        updateScore();
+        document.querySelector('.restart-btn').style.display = 'none';
+        document.querySelector('.submit-btn').style.display = 'none';
+    }
+
+    function loadQuestion() {
+        questionAnswered = false;
+        const question = questions[currentQuestion];
+        document.querySelector('.question').textContent = `${currentQuestion + 1}. ${question.question}`;
+
+        const optionsContainer = document.querySelector('.options');
+        optionsContainer.innerHTML = '';
+
+        question.options.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.className = 'option';
+            button.textContent = option;
+            button.addEventListener('click', () => checkAnswer(index));
+            optionsContainer.appendChild(button);
+        });
+
+        document.querySelector('.result').textContent = '';
+        document.querySelector('.next-btn').style.display = 'none';
+        document.querySelector('.submit-btn').style.display = 'none';
+    }
+
+    function checkAnswer(selectedIndex) {
+        if (questionAnswered) return;
+
+        questionAnswered = true;
+        const correct = questions[currentQuestion].correct;
+        const options = document.querySelectorAll('.option');
+
+        options.forEach((option, index) => {
+            option.style.pointerEvents = 'none';
+            if (index === correct) {
+                option.classList.add('correct');
+            }
+            if (index === selectedIndex && selectedIndex !== correct) {
+                option.classList.add('incorrect');
+            }
+        });
+
+        if (selectedIndex === correct) {
+            score++;
+            document.querySelector('.result').textContent = 'Correct! 🎉';
+        } else {
+            document.querySelector('.result').textContent = 'Incorrect! Try again next time.';
+        }
+
+        updateScore();
+
+        if (currentQuestion < questions.length - 1) {
+            document.querySelector('.next-btn').style.display = 'block';
+        } else {
+            showFinalScore();
+        }
+    }
+
+    function updateScore() {
+        document.querySelector('.score').textContent = `Score: ${score}/${currentQuestion + 1}`;
+    }
+
+    function showFinalScore() {
+        const percentage = ((score / questions.length) * 100).toFixed(2);
+        document.querySelector('.result').textContent = `Your final score is ${percentage}%.`;
+        document.querySelector('.submit-btn').style.display = 'block';
+    }
+
+    document.querySelector('.next-btn').addEventListener('click', () => {
+        currentQuestion++;
+        loadQuestion();
+    });
+
+    document.querySelector('.submit-btn').addEventListener('click', () => {
+        saveScore(userId, score); // Replace with actual function to save score to MongoDB
+        document.querySelector('.result').textContent = 'Your score has been saved!';
+        document.querySelector('.submit-btn').style.display = 'none';
+        document.querySelector('.restart-btn').style.display = 'block';
+    });
+
+    document.querySelector('.restart-btn').addEventListener('click', initQuiz);
+
+    function saveScore(userId, score) {
+        // Mock function for saving score to MongoDB
+        console.log(`Saving score of ${score} for user ID: ${userId}`);
+        // You can replace this with an actual AJAX request to your Node.js backend
+        // fetch('/save-score', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({ userId, score })
+        // });
+    }
+
+    window.onload = initQuiz;
+</script>
+{{> footer}}

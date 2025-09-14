@@ -1,10 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-mongoose.connect('mongodb+srv://ravitejamuvce:IGm70s5edUlSiON0@users.ex4rhva.mongodb.net/?retryWrites=true&w=majority&appName=Users', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+mongoose.connect(process.env.MONGODB_URI);
 
 // User Schema and Model
 const LoginSchema = new mongoose.Schema({
@@ -20,11 +17,19 @@ const LoginSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
     password: {
         type: String,
         required: true
+    },
+    location: {
+        type: String,
+        required: true
     }
- 
 });
 
 LoginSchema.pre('save', async function (next) {
@@ -45,7 +50,11 @@ LoginSchema.pre('save', async function (next) {
     }
 });
 
+LoginSchema.methods.verifyPassword = async function (password) {
+    return bcrypt.compare(password, this.password);
+};
 
+// Helpline Schema
 const HelplineSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -61,6 +70,7 @@ const HelplineSchema = new mongoose.Schema({
     }
 });
 
+// Community Post Schema - Define replySchema first
 const replySchema = new mongoose.Schema({
     username: { type: String, required: true },
     text: { type: String, required: true },
@@ -75,8 +85,7 @@ const postSchema = new mongoose.Schema({
 });
 
 const CommunityPost = mongoose.model('CommunityPost', postSchema);
-
 const User = mongoose.model('Authentication', LoginSchema);
 const Helpline = mongoose.model('Helpline', HelplineSchema);
 
-module.exports = { User, Helpline, CommunityPost};
+module.exports = { User, Helpline, CommunityPost };

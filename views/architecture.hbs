@@ -1,0 +1,131 @@
+{{> header}}
+<main class="min-h-screen text-green-400 font-sans pt-18 pb-18 px-4">
+    <h1 class="text-3xl font-bold text-green-400 text-center mb-8 drop-shadow border-green-400 pb-2">Cyber Architect: Build Your Security Architecture</h1>
+    <div class="game-container flex flex-col lg:flex-row justify-center items-start gap-8 w-full max-w-6xl mx-auto mb-8">
+        <!-- Toolbox with security components -->
+        <div class="toolbox border-2 border-green-400 rounded-xl p-6 w-full lg:w-1/3 min-h-[400px] bg-[#2a2a2a]">
+            <h2 class="text-2xl font-semibold mb-4 text-green-400 drop-shadow">Security Components</h2>
+            <div class="tool-item bg-[#1a1a1a] text-green-400 p-3 mb-4 rounded cursor-grab border border-green-400" draggable="true" id="firewall">Firewall</div>
+            <div class="tool-item bg-[#1a1a1a] text-green-400 p-3 mb-4 rounded cursor-grab border border-green-400" draggable="true" id="ids">Intrusion Detection System</div>
+            <div class="tool-item bg-[#1a1a1a] text-green-400 p-3 mb-4 rounded cursor-grab border border-green-400" draggable="true" id="vpn">VPN</div>
+            <div class="tool-item bg-[#1a1a1a] text-green-400 p-3 mb-4 rounded cursor-grab border border-green-400" draggable="true" id="encryption">Encryption</div>
+        </div>
+        <!-- Network diagram (drop area) -->
+        <div class="network-diagram border-2 border-green-400 rounded-xl p-6 w-full lg:w-1/3 min-h-[400px]  flex flex-col items-center bg-[#2a2a2a]">
+            <h2 class="text-2xl font-semibold mb-4 text-green-400 drop-shadow">Network Diagram</h2>
+            <div class="dropzone w-full text-gray-400 p-8 mb-4 border-2 border-dashed border-green-400 rounded-lg flex flex-col items-center" id="dropzone1">Drop Security Component Here</div>
+        </div>
+        <!-- Configuration panel -->
+        <div class="config-panel border-2 border-green-400 rounded-xl p-6 w-full lg:w-1/3 min-h-[400px] text-green-400 bg-[#2a2a2a]">
+            <h2 class="text-2xl font-semibold mb-4 text-green-400 drop-shadow">Configuration Panel</h2>
+            <p>Click on a component to configure it.</p>
+        </div>
+    </div>
+    <!-- Review Button -->
+    <div class="review-section mt-8 w-full max-w-2xl mx-auto flex flex-col items-center pb-8 mb-8">
+        <button id="reviewButton" class="px-6 py-3 text-lg font-bold bg-green-400 text-black rounded-lg shadow hover:bg-green-500 transition-colors">Review Architecture</button>
+        <div id="reviewResult" class="mt-6 text-lg"></div>
+    </div>
+
+    <script>
+        const toolboxItems = document.querySelectorAll('.tool-item');
+        const dropzone = document.getElementById('dropzone1');
+        const configPanel = document.getElementById('configPanel');
+        const reviewButton = document.getElementById('reviewButton');
+        const reviewResult = document.getElementById('reviewResult');
+
+        // List to track what components have been added
+        let addedComponents = [];
+
+        // Drag and Drop functionality
+        toolboxItems.forEach(item => {
+            item.addEventListener('dragstart', dragStart);
+        });
+
+        dropzone.addEventListener('dragover', dragOver);
+        dropzone.addEventListener('drop', dropItem);
+
+        function dragStart(e) {
+            e.dataTransfer.setData('text', e.target.id);
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+        }
+
+        function dropItem(e) {
+            e.preventDefault();
+            const id = e.dataTransfer.getData('text');
+            const item = document.getElementById(id).cloneNode(true);
+
+            // Only allow one instance of each component
+            if (!addedComponents.includes(id)) {
+                item.addEventListener('click', configureItem);
+                dropzone.appendChild(item);
+                addedComponents.push(id); // Add the component to the list
+            } else {
+                alert("You can only add one " + id + " to the architecture.");
+            }
+        }
+
+        function configureItem(e) {
+            const itemId = e.target.id;
+            configPanel.innerHTML = `<h2 class="text-2xl font-semibold mb-4 text-green-400 drop-shadow">Configuring: ${itemId}</h2><p class="text-green-400">Settings for ${itemId}...</p>`;
+        }
+
+        // Review Architecture
+        reviewButton.addEventListener('click', reviewArchitecture);
+
+        function reviewArchitecture() {
+            let score = 0;
+            let feedback = [];
+
+            // Evaluate based on added components
+            if (addedComponents.includes('firewall')) {
+                score += 25;
+                feedback.push('Firewall is present.');
+            } else {
+                feedback.push('No firewall detected. Your network is vulnerable.');
+            }
+
+            if (addedComponents.includes('ids')) {
+                score += 25;
+                feedback.push('Intrusion Detection System (IDS) is configured.');
+            } else {
+                feedback.push('No IDS found. Consider adding one to monitor for intrusions.');
+            }
+
+            if (addedComponents.includes('vpn')) {
+                score += 25;
+                feedback.push('VPN is in place, providing secure communication.');
+            } else {
+                feedback.push('No VPN detected. Add a VPN for secure remote access.');
+            }
+
+            if (addedComponents.includes('encryption')) {
+                score += 25;
+                feedback.push('Encryption is enabled, securing data.');
+            } else {
+                feedback.push('Data is not encrypted. Consider enabling encryption for data security.');
+            }
+
+            // Final feedback
+            reviewResult.innerHTML = `<p class="text-green-400">Your architecture scored ${score}/100.</p>`;
+            feedback.forEach(item => {
+                reviewResult.innerHTML += `<p class="text-green-400">${item}</p>`;
+            });
+
+            // Final evaluation based on score
+            if (score === 100) {
+                reviewResult.innerHTML += '<p class="text-green-400">Excellent! Your security architecture is robust.</p>';
+            } else if (score >= 75) {
+                reviewResult.innerHTML += '<p class="text-green-400">Good, but you can improve by addressing the missing components.</p>';
+            } else {
+                reviewResult.innerHTML += '<p class="text-green-400">Your architecture has significant weaknesses. Consider revising it.</p>';
+            }
+        }
+
+    </script>
+</main>
+
+{{> footer}}

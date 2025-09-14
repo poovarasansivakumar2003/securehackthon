@@ -1,178 +1,110 @@
-require('dotenv').config();
+require('dotenv').config(); // Suppress dotenv logs
 const express = require('express');
-const bcrypt = require('bcrypt');
 const path = require('path');
 const hbs = require('hbs');
-const session = require('express-session'); // Add express-session
-const { User, Helpline, CommunityPost } = require('./mongodb'); // Ensure CommunityPost is imported
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+
+// Import Handlebars helpers
+require('./helpers/handlebars');
+
+// Import routes
+const homeRoutes = require('./routes/homeRoutes');
+const authRoutes = require('./routes/authRoutes');
+const communityRoutes = require('./routes/communityRoutes');
 
 const app = express();
-const port = 3000;
 
+// View engine setup
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
+
+// Register Handlebars partials directory
+hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
+
+// Static files middleware
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-hbs.registerHelper('formatDate', (date) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(date).toLocaleDateString('en-US', options);
-});
-// Configure express-session
-app.use(session({
-    resave: false,
-    saveUninitialized: true,
-    secret: process.env.SESSION_SECRET,
-    cookie: { maxAge: 60000 } // Set cookie expiration (1 minute for demo purposes)
-}));
 
-app.get('/', (req, res) => {
-    // Check if the user is logged in
-    const user = req.session.user || null;
-    res.render('index', {
-        content: user ? 'Log Out' : 'Login',
-        name: user ? `${user.firstName} ${user.lastName}` : 'User',
-        form: user ? '/logout' : '/login', // Change form to point to logout if logged in
-        successMessage: req.session.successMessage || ''
-    });
-    req.session.successMessage = ''; // Clear success message after displaying
-});
+// Body parsing middleware
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+app.use(express.json({ limit: '10mb' }));
 
+// Add cookie-parser middleware
+app.use(cookieParser());
 
-app.get('/login', (req, res) => {
-    res.render('login', { content: '' });
-});
-
-app.get('/signup', (req, res) => {
-    res.render('signup', { content: '' });
-});
-
-app.get('/helpline', (req, res) => {
-    res.render('helpline', { user: req.session.user || null }); // Pass user info to helpline page
-});
-
-// Signup Route
-// Signup Route
-app.post('/signup', async (req, res) => {
-    try {
-        const check = await User.findOne({ name: req.body.name });
-        if (check) {
-            return res.render('signup', { content: 'Username already taken', wrongPassword: "Username taken" });
-        } else {
-            const hashedPassword = await bcrypt.hash(req.body.password, 10); // Hash the password
-
-            const data = {
-                name: req.body.name,
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
-                password: hashedPassword, // Use the hashed password
-            };
-
-            const newUser = new User(data);
-            await newUser.save();
-            req.session.successMessage = "SignUp successful"; // Set success message
-            return res.redirect('/'); // Redirect to home after signup
+// Middleware to verify JWT and pass user to all views
+app.use((req, res, next) => {
+    const token = req.cookies?.token; // Use cookie-parser to access cookies
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            res.locals.user = decoded;
+        } catch (err) {
+            console.error('Invalid token:', err.message);
+            res.locals.user = null;
         }
-    } catch (error) {
-        console.error('Error during signup:', error);
-        return res.status(500).send('Internal Server Error');
+    } else {
+        res.locals.user = null;
     }
+    res.locals.successMessage = '';
+    next();
 });
 
-// Login Route
-app.post('/login', async (req, res) => {
-    try {
-        const user = await User.findOne({ name: req.body.name });
+// Routes
+app.use('/', homeRoutes);
+app.use('/auth', authRoutes);
+app.use('/community', communityRoutes);
 
-        if (!user) {
-            return res.render('login', { content: 'Wrong Details', wrongPassword: 'Wrong Username' });
-        }
-
-        const isMatch = await bcrypt.compare(req.body.password, user.password);
-
-        if (isMatch) {
-            // Store user information in session
-            req.session.user = {
-                name: user.name,
-                firstName: user.firstName,
-                lastName: user.lastName,
-            };
-            req.session.successMessage = 'Login successful!'; // Set success message
-            return res.redirect('/'); // Redirect to home after login
-        } else {
-            return res.render('login', { wrongPassword: 'Wrong Password' });
-        }
-    } catch (error) {
-        console.error('Error during login:', error);
-        return res.status(500).send('Internal Server Error');
-    }
-});
-// Logout route
-app.get('/logout', (req, res) => {
-    req.session.destroy(err => {
-        if (err) {
-            return res.status(500).send('Could not log out.');
-        }
-        res.redirect('/'); // Redirect to home after logout
-    });
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error('Error:', err);
+    res.status(500).send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>500 - Server Error</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+        </head>
+        <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center justify-center">
+            <div class="text-center">
+                <h1 class="text-8xl font-bold text-red-500">500</h1>
+                <p class="text-2xl text-gray-300 mt-4">Oops! Something went wrong on our end.</p>
+                <a href="/" class="mt-6 inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    Return to Home
+                </a>
+            </div>
+        </body>
+        </html>
+    `);
 });
 
-
-// Community Page
-app.get('/community', async (req, res) => {
-    try {
-        const posts = await CommunityPost.find().sort({ createdAt: -1 }); // Fetch posts sorted by latest first
-        res.render('community', { user: req.session.user || null, posts });
-    } catch (error) {
-        console.error('Error fetching community posts:', error.message);
-        res.status(500).json({ error: 'Server error. Please try again later.' });
-    }
+// 404 handler
+app.use((req, res) => {
+    res.status(404).send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>404 - Page Not Found</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+        </head>
+        <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center justify-center">
+            <div class="text-center">
+                <h1 class="text-8xl font-bold text-gray-500">404</h1>
+                <p class="text-2xl text-gray-300 mt-4">Sorry, the page you are looking for does not exist.</p>
+                <a href="/" class="mt-6 inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    Go to Home
+                </a>
+            </div>
+        </body>
+        </html>
+    `);
 });
 
-// Post a new community message
-app.post('/community/post', async (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).json({ error: 'You must be logged in to post.' });
-    }
-
-    const { text } = req.body;
-    const username = req.session.user.name; // Use session name
-
-    try {
-        const newPost = new CommunityPost({ username, text });
-        await newPost.save();
-        res.redirect('/community');
-    } catch (error) {
-        console.error('Error posting message:', error.message);
-        res.status(500).json({ error: 'Server error. Please try again later.' });
-    }
-});
-
-// Reply to a community post
-app.post('/community/reply/:postId', async (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).json({ error: 'You must be logged in to reply.' });
-    }
-
-    const { text } = req.body;
-    const username = req.session.user.name; // Use session name
-    const postId = req.params.postId;
-
-    try {
-        const post = await CommunityPost.findById(postId);
-        if (!post) {
-            return res.status(404).json({ error: 'Post not found.' });
-        }
-        post.replies.push({ username, text });
-        await post.save();
-        res.redirect('/community');
-    } catch (error) {
-        console.error('Error replying to post:', error.message);
-        res.status(500).json({ error: 'Server error. Please try again later.' });
-    }
-});
-
-app.listen(port, () => {
-    console.log(`Listening on port ${port}`);
-    console.log('http://localhost:3000');
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`Server running on port ${process.env.PORT || 3000}`);
+  console.log(`http://localhost:${process.env.PORT || 3000}`);
 });

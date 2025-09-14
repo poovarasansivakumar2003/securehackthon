@@ -1,49 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Training Modules</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link your CSS file -->
-    <script src="../public/script.js" defer></script> <!-- Link your JavaScript file -->
-</head>
-<body>
+{{> header}}
 
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="navbar-container">
-            <a href="index.html" class="navbar-brand">Cyber Quest</a>
-            <ul class="navbar-links">
-                <li><a href="training.html">Training</a></li>
-                <li><a href="quiz.html">Quiz</a></li>
-                <li><a href="leaderboard.html">Leaderboard</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="training-grid">
-        <div class="card module-card">
-            <div class="module-header">
-                <h3>Phishing Defense</h3>
-                <span class="difficulty">Intermediate</span>
+<main class="min-h-screen bg-[#1a1a1a] text-white pt-20 pb-20 px-4">
+    <div class="max-w-6xl mx-auto">
+        <div class="card module-card bg-[#2a2a2a] rounded-xl p-6 mb-12">
+            <div class="module-header flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-white">Phishing Defense</h3>
+                <span class="difficulty bg-[#0066ff] text-white px-3 py-1 rounded-full text-sm">Intermediate</span>
             </div>
-            <p>Learn to identify and protect against phishing attacks</p>
-            <div class="module-progress">
-                <div class="progress-bar">
-                    <div class="progress" style="width: 60%">60%</div>
+            <p class="text-green-400 mb-4">Learn to identify and protect against phishing attacks</p>
+            <div class="module-progress mb-4">
+                <div class="progress-bar w-full bg-[#1a1a1a] rounded-full h-5">
+                    <div class="progress bg-[#00ff9d] h-5 rounded-full transition-all duration-300" style="width: 60%">60%
+                    </div>
                 </div>
             </div>
-            <button class="btn-primary">Continue</button>
+            <button
+                class="btn-primary text-black hover:bg-[#1a1a1a] font-semibold py-3 px-4 rounded-lg">Continue</button>
         </div>
-        <!-- Add more training modules here -->
+
+        <!-- New Games Section -->
+        <section class="games-section mt-12 mb-16">
+            <h2 class="text-3xl font-semibold mb-6 text-center">Games</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Game 1 -->
+                <a href="/architecture"
+                    class="card game-card bg-[#2a2a2a] rounded-xl p-6  shadow-lg hover:border-[#00ff9d] transition-all duration-300 hover:scale-105 block">
+                    <div class="game-header mb-2">
+                        <h3 class="text-xl font-bold text-white">Secure Architecture</h3>
+                    </div>
+                    <p class="text-[#b3b3b3]">Learn about secure system design and best practices for protecting
+                        infrastructure.</p>
+                </a>
+                <!-- Game 2 -->
+                <a href="/exploit"
+                    class="card game-card bg-[#2a2a2a] rounded-xl p-6  shadow-lg hover:border-[#00ff9d] transition-all duration-300 hover:scale-105 block">
+                    <div class="game-header mb-2">
+                        <h3 class="text-xl font-bold text-white">Exploit Simulation</h3>
+                    </div>
+                    <p class="text-[#b3b3b3]">Understand and simulate real-world exploit scenarios.</p>
+                </a>
+                <!-- Game 3 -->
+                <a href="/penetration"
+                    class="card game-card bg-[#2a2a2a] rounded-xl p-6  shadow-lg hover:border-[#00ff9d] transition-all duration-300 hover:scale-105 block">
+                    <div class="game-header mb-2">
+                        <h3 class="text-xl font-bold text-white">Penetration Testing</h3>
+                    </div>
+                    <p class="text-[#b3b3b3]">Engage in ethical hacking and test for vulnerabilities.</p>
+                </a>
+                <!-- Game 4 -->
+                <a href="/socialEngineering"
+                    class="card game-card bg-[#2a2a2a] rounded-xl p-6  shadow-lg hover:border-[#00ff9d] transition-all duration-300 hover:scale-105 block">
+                    <div class="game-header mb-2">
+                        <h3 class="text-xl font-bold text-white">Social Engineering</h3>
+                    </div>
+                    <p class="text-[#b3b3b3]">Identify and protect against social engineering attacks.</p>
+                </a>
+                <!-- Game 5 -->
+                <a href="/cyberGame"
+                    class="card game-card bg-[#2a2a2a] rounded-xl p-6  shadow-lg hover:border-[#00ff9d] transition-all duration-300 hover:scale-105 block">
+                    <div class="game-header mb-2">
+                        <h3 class="text-xl font-bold text-white">Cyber Defense</h3>
+                    </div>
+                    <p class="text-[#b3b3b3]">Test your cyber defense skills in a simulated environment.</p>
+                </a>
+            </div>
+        </section>
     </div>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 Cyber Quest. All rights reserved.</p>
-    </footer>
-
-</body>
-</html>
+</main>
+{{> footer}}

@@ -1,0 +1,40 @@
+{{> header}}
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lab-container">
+        <div class="card lab-environment">
+            <h2>Virtual Lab Environment</h2>
+            <div class="lab-controls">
+                <button class="btn-primary">Start Simulation</button>
+                <button class="btn-secondary">Reset Environment</button>
+            </div>
+            <div class="lab-workspace">
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <span>Terminal</span>
+                    </div>
+                    <div class="terminal-content">
+                        <p>root@cyberlab:~# _</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="bg-white shadow-md py-8 w-full mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <p class="text-gray-500">© 2024 CyberGuard. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    // Toggle mobile menu
+    document.querySelector('.mobile-menu-btn').onclick = function () {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('hidden');
+    };
+</script>
+
+
+{{> footer}}

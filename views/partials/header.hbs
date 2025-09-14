@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard Training Platform</title>
+    <link rel="stylesheet" href="/css/style.css">
+     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i>
+            <span>CyberGuard</span>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="{{#if (eq currentPage 'home')}}active{{/if}}"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="/training" class="{{#if (eq currentPage 'training')}}active{{/if}}"><i class="fas fa-graduation-cap"></i> Training</a>
+            <a href="/lab" class="{{#if (eq currentPage 'lab')}}active{{/if}}"><i class="fas fa-flask"></i> Cyber Lab</a>
+            <a href="/quiz" class="{{#if (eq currentPage 'quiz')}}active{{/if}}"><i class="fas fa-tasks"></i> Quests</a>
+            <a href="/community" class="{{#if (eq currentPage 'community')}}active{{/if}}"><i class="fas fa-newspaper"></i> News</a>
+            <a href="/teamhub" class="{{#if (eq currentPage 'teamhub')}}active{{/if}}"><i class="fas fa-users"></i> Team Hub</a>
+            <a href="/helpline" class="{{#if (eq currentPage 'helpline')}}active{{/if}}"><i class="fas fa-phone"></i> Helpline</a>
+            <a href="/auth/login" class="{{#if (eq currentPage 'login')}}active{{/if}}"><i class="fas fa-sign-in-alt"></i> Login</a>
+            <a href="/auth/signup" class="{{#if (eq currentPage 'signup')}}active{{/if}}"><i class="fas fa-user-plus"></i> Sign Up</a>
+        </div>
+        <button class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
