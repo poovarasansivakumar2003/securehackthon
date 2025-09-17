@@ -11,29 +11,6 @@ mobileMenuBtn.addEventListener('click', () => {
     navLinksContainer.classList.toggle('active');
 });
 
-// Navigation System
-navLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        // Update active link
-        navLinks.forEach(link => link.classList.remove('active'));
-        link.classList.add('active');
-        
-        // Show corresponding section
-        const targetId = link.getAttribute('href').substring(1);
-        sections.forEach(section => {
-            section.classList.remove('active-section');
-            section.classList.add('hidden-section');
-        });
-        document.getElementById(targetId).classList.remove('hidden-section');
-        document.getElementById(targetId).classList.add('active-section');
-        
-        // Close mobile menu if open
-        navLinksContainer.classList.remove('active');
-    });
-});
-
 // Notification System
 class NotificationSystem {
     static show(message, type = 'info', duration = 3000) {
@@ -416,5 +393,7 @@ class NotificationSystem {
 
 // Initialize team system when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.teamSystem = new TeamSystem();
+    if (typeof TeamSystem !== 'undefined') {
+        window.teamSystem = new TeamSystem();
+    }
 });

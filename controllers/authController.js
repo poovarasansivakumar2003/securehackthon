@@ -28,7 +28,7 @@ class AuthController {
             if (!name || !firstName || !lastName || !email || !password || !location) {
                 return res.render('signup', { 
                     content: 'All fields are required', 
-                    wrongPassword: "Missing fields",
+                    wrongPassword: "All fields are required",
                     currentPage: 'signup'
                 });
             }
@@ -36,7 +36,7 @@ class AuthController {
             if (password.length < 6) {
                 return res.render('signup', { 
                     content: 'Password must be at least 6 characters', 
-                    wrongPassword: "Weak password",
+                    wrongPassword: "Password must be at least 6 characters",
                     currentPage: 'signup'
                 });
             }
@@ -45,7 +45,7 @@ class AuthController {
             if (existingUser) {
                 return res.render('signup', { 
                     content: 'Email already in use', 
-                    wrongPassword: "Email taken",
+                    wrongPassword: "Email already in use",
                     currentPage: 'signup'
                 });
             }
@@ -53,12 +53,17 @@ class AuthController {
             const newUser = new User({ name, firstName, lastName, email, password, location });
             await newUser.save();
 
-            res.redirect('/auth/login');
+            // Render login page with success message
+            res.render('login', {
+                currentPage: 'login',
+                successMessage: 'Account created successfully! Please log in.',
+                showSuccessToast: true
+            });
         } catch (error) {
             console.error('Signup error:', error);
             res.status(500).render('signup', { 
                 content: 'Server error occurred', 
-                wrongPassword: "Server error",
+                wrongPassword: "Server error occurred. Please try again.",
                 currentPage: 'signup'
             });
         }
@@ -72,7 +77,7 @@ class AuthController {
             if (!email || !password) {
                 return res.render('login', { 
                     content: 'Email and password required', 
-                    wrongPassword: 'Missing credentials',
+                    wrongPassword: 'Email and password are required',
                     currentPage: 'login'
                 });
             }
@@ -81,7 +86,7 @@ class AuthController {
             if (!user) {
                 return res.render('login', { 
                     content: 'Invalid email or password', 
-                    wrongPassword: 'Invalid credentials',
+                    wrongPassword: 'Invalid email or password',
                     currentPage: 'login'
                 });
             }
@@ -95,7 +100,13 @@ class AuthController {
             }
 
             const token = jwt.sign(
-                { id: user._id, email: user.email },
+                { 
+                    id: user._id, 
+                    email: user.email, 
+                    name: user.name,
+                    firstName: user.firstName,
+                    lastName: user.lastName 
+                },
                 process.env.JWT_SECRET,
                 { expiresIn: '1d' }
             );
@@ -107,12 +118,14 @@ class AuthController {
                 maxAge: 24 * 60 * 60 * 1000 // 1 day
             });
 
+            // Redirect with success message
+            res.cookie('loginSuccess', 'true', { maxAge: 5000 }); // 5 second cookie for success message
             res.redirect('/');
         } catch (error) {
             console.error('Login error:', error);
             res.status(500).render('login', { 
                 content: 'Server error occurred', 
-                wrongPassword: 'Server error',
+                wrongPassword: 'Server error occurred. Please try again.',
                 currentPage: 'login'
             });
         }
@@ -121,6 +134,7 @@ class AuthController {
     // Handle user logout
     static logout(req, res) {
         res.clearCookie('token');
+        res.cookie('logoutSuccess', 'true', { maxAge: 5000 }); // 5 second cookie for success message
         res.redirect('/auth/login');
     }
 }

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberGuard Training Platform</title>
     <link rel="stylesheet" href="/css/style.css">
-     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -22,10 +22,28 @@
             <a href="/community" class="{{#if (eq currentPage 'community')}}active{{/if}}"><i class="fas fa-newspaper"></i> News</a>
             <a href="/teamhub" class="{{#if (eq currentPage 'teamhub')}}active{{/if}}"><i class="fas fa-users"></i> Team Hub</a>
             <a href="/helpline" class="{{#if (eq currentPage 'helpline')}}active{{/if}}"><i class="fas fa-phone"></i> Helpline</a>
-            <a href="/auth/login" class="{{#if (eq currentPage 'login')}}active{{/if}}"><i class="fas fa-sign-in-alt"></i> Login</a>
-            <a href="/auth/signup" class="{{#if (eq currentPage 'signup')}}active{{/if}}"><i class="fas fa-user-plus"></i> Sign Up</a>
+            <div class="flex items-center space-x-4">
+                {{#if user}}
+                    <span class="text-white">Welcome, {{user.firstName}}!</span>
+                    <form action="/auth/logout" method="POST" style="display: inline;">
+                        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors">Logout</button>
+                    </form>
+                {{else}}
+                    <a href="/auth/login" class="text-white hover:text-green-400 transition-colors">Login</a>
+                    <a href="/auth/signup" class="bg-green-400 text-black px-4 py-2 rounded hover:bg-green-500 transition-colors">Sign Up</a>
+                {{/if}}
+            </div>
         </div>
         <button class="mobile-menu-btn">
             <i class="fas fa-bars"></i>
         </button>
     </nav>
+
+<script>
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+
+    mobileMenuBtn.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+    });
+</script>

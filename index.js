@@ -1,4 +1,4 @@
-require('dotenv').config(); // Suppress dotenv logs
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const hbs = require('hbs');
@@ -11,6 +11,7 @@ require('./helpers/handlebars');
 // Import routes
 const homeRoutes = require('./routes/homeRoutes');
 const authRoutes = require('./routes/authRoutes');
+const trainingRoutes = require('./routes/trainingRoutes');
 const communityRoutes = require('./routes/communityRoutes');
 
 const app = express();
@@ -54,56 +55,20 @@ app.use((req, res, next) => {
 app.use('/', homeRoutes);
 app.use('/auth', authRoutes);
 app.use('/community', communityRoutes);
+app.use('/training', trainingRoutes);
 
-// Global error handler
+// 500 handler
 app.use((err, req, res, next) => {
     console.error('Error:', err);
-    res.status(500).send(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>500 - Server Error</title>
-            <script src="https://cdn.tailwindcss.com"></script>
-        </head>
-        <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center justify-center">
-            <div class="text-center">
-                <h1 class="text-8xl font-bold text-red-500">500</h1>
-                <p class="text-2xl text-gray-300 mt-4">Oops! Something went wrong on our end.</p>
-                <a href="/" class="mt-6 inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                    Return to Home
-                </a>
-            </div>
-        </body>
-        </html>
-    `);
+    res.status(500).render('500');
 });
 
-// 404 handler
+// 404 handler 
 app.use((req, res) => {
-    res.status(404).send(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>404 - Page Not Found</title>
-            <script src="https://cdn.tailwindcss.com"></script>
-        </head>
-        <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center justify-center">
-            <div class="text-center">
-                <h1 class="text-8xl font-bold text-gray-500">404</h1>
-                <p class="text-2xl text-gray-300 mt-4">Sorry, the page you are looking for does not exist.</p>
-                <a href="/" class="mt-6 inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                    Go to Home
-                </a>
-            </div>
-        </body>
-        </html>
-    `);
+    res.status(404).render('404');
 });
 
+// Start the server
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Server running on port ${process.env.PORT || 3000}`);
   console.log(`http://localhost:${process.env.PORT || 3000}`);

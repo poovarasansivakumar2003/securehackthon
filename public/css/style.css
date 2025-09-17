@@ -98,7 +98,6 @@ nav {
 /* Main Content Styles */
 main {
     margin-top: 80px;
-    margin-bottom: 80px;
     padding: 1rem;
 }
 
@@ -114,7 +113,7 @@ main {
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 /* Progress Bars */
@@ -400,13 +399,13 @@ main {
 }
 
 /* Responsive Design */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1200px) {
     nav {
         padding: 1rem;
     }
 
     .nav-links {
-        display: none;
+        display: none !important;
         position: absolute;
         top: 100%;
         left: 0;
@@ -414,10 +413,12 @@ main {
         background-color: var(--background-light);
         flex-direction: column;
         padding: 1rem;
+        z-index: 1001;
     }
 
-    .nav-links.active {
-        display: flex;
+    nav .nav-links.active {
+        display: flex !important;
+        flex-direction: column;
     }
 
     .mobile-menu-btn {

@@ -1,7 +1,6 @@
 const { CommunityPost } = require('../mongodb');
 
 class CommunityController {
-    // Get community page with posts
     static async getCommunity(req, res) {
         try {
             const posts = await CommunityPost.find()
@@ -31,11 +30,13 @@ class CommunityController {
             const { text } = req.body;
             
             if (!text || text.trim().length === 0) {
-                return res.status(400).json({ error: 'Post content is required.' });
+                const posts = await CommunityPost.find().sort({ createdAt: -1 }).limit(50).lean();
+                return res.status(400).render('community', { error: 'Post content cannot be empty.', user: req.user, posts, currentPage: 'community' });
             }
             
             if (text.length > 1000) {
-                return res.status(400).json({ error: 'Post content too long (max 1000 characters).' });
+                const posts = await CommunityPost.find().sort({ createdAt: -1 }).limit(50).lean();
+                return res.status(400).render('community', { error: 'Post content too long (max 1000 characters).', user: req.user, posts, currentPage: 'community' });
             }
 
             const newPost = new CommunityPost({ 
@@ -47,7 +48,8 @@ class CommunityController {
             res.redirect('/community');
         } catch (error) {
             console.error('Error creating post:', error);
-            res.status(500).json({ error: 'Server error. Please try again later.' });
+            const posts = await CommunityPost.find().sort({ createdAt: -1 }).limit(50).lean();
+            res.status(500).render('community', { error: 'Server error. Please try again later.', user: req.user, posts, currentPage: 'community' });
         }
     }
 
@@ -58,11 +60,13 @@ class CommunityController {
             const { postId } = req.params;
             
             if (!text || text.trim().length === 0) {
-                return res.status(400).json({ error: 'Reply content is required.' });
+                const posts = await CommunityPost.find().sort({ createdAt: -1 }).limit(50).lean();
+                return res.status(400).render('community', { error: 'Reply content cannot be empty.', user: req.user, posts, currentPage: 'community' });
             }
             
             if (text.length > 500) {
-                return res.status(400).json({ error: 'Reply content too long (max 500 characters).' });
+                const posts = await CommunityPost.find().sort({ createdAt: -1 }).limit(50).lean();
+                return res.status(400).render('community', { error: 'Reply content too long (max 500 characters).', user: req.user, posts, currentPage: 'community' });
             }
 
             const post = await CommunityPost.findById(postId);
@@ -79,7 +83,8 @@ class CommunityController {
             res.redirect('/community');
         } catch (error) {
             console.error('Error replying to post:', error);
-            res.status(500).json({ error: 'Server error. Please try again later.' });
+            const posts = await CommunityPost.find().sort({ createdAt: -1 }).limit(50).lean();
+            res.status(500).render('community', { error: 'Server error. Please try again later.', user: req.user, posts, currentPage: 'community' });
         }
     }
 }

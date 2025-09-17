@@ -23,7 +23,7 @@
     </div>
     <!-- Review Button -->
     <div class="review-section mt-8 w-full max-w-2xl mx-auto flex flex-col items-center pb-8 mb-8">
-        <button id="reviewButton" class="px-6 py-3 text-lg font-bold bg-green-400 text-black rounded-lg shadow hover:bg-green-500 transition-colors">Review Architecture</button>
+        <button id="reviewButton" class="px-6 py-3 text-lg rounded-lg shadow bg-green-400 text-black hover:bg-green-500 transition-colors">Review Architecture</button>
         <div id="reviewResult" class="mt-6 text-lg"></div>
     </div>
 
@@ -36,6 +36,7 @@
 
         // List to track what components have been added
         let addedComponents = [];
+        let gameStartTime = null;
 
         // Drag and Drop functionality
         toolboxItems.forEach(item => {
@@ -65,6 +66,10 @@
                 addedComponents.push(id); // Add the component to the list
             } else {
                 alert("You can only add one " + id + " to the architecture.");
+            }
+
+            if (!gameStartTime) {
+                gameStartTime = new Date();
             }
         }
 
@@ -122,6 +127,51 @@
                 reviewResult.innerHTML += '<p class="text-green-400">Good, but you can improve by addressing the missing components.</p>';
             } else {
                 reviewResult.innerHTML += '<p class="text-green-400">Your architecture has significant weaknesses. Consider revising it.</p>';
+            }
+
+            // Save game session after review
+            saveGameSession(score);
+        }
+
+        async function saveGameSession(score) {
+            if (!gameStartTime) return;
+            
+            const timeSpent = Math.floor((new Date() - gameStartTime) / 1000);
+            
+            const gameData = {
+                componentsAdded: addedComponents,
+                architectureScore: score,
+                componentsCount: addedComponents.length
+            };
+
+            try {
+                const response = await fetch('/training/save-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        gameType: 'architecture',
+                        score: score,
+                        level: 1,
+                        timeSpent: timeSpent,
+                        completedChallenges: ['architecture_review'],
+                        gameData: gameData
+                    })
+                });
+
+                if (response.status === 401) {
+                    alert('Please sign in to save your progress');
+                    window.location.href = '/auth/login';
+                    return;
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    console.log('Game session saved successfully');
+                }
+            } catch (error) {
+                console.error('Error saving game session:', error);
             }
         }
 

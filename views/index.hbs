@@ -1,16 +1,98 @@
 {{> header}}
-    <!-- Main Content -->
-    <main class="min-h-screen text-white pt-15 pb-14 px-4">
+<style>
+    .dashboard-main {
+        margin: 100px auto 100px auto;
+        padding: 2rem;
+    }
+
+    .card {
+        background: var(--background-light);
+        border-radius: 12px;
+        padding: 1.5rem;
+        width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 255, 157, 0.1);
+    }
+
+    .card h2 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        border-bottom: 2px solid rgba(0, 255, 157, 0.2);
+        padding-bottom: 0.5rem;
+    }
+
+    .progress-stats .stat {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .progress-stats .label {
+        color: var(--text-secondary);
+    }
+
+    .progress-stats .value {
+        font-weight: bold;
+        color: var(--text-primary);
+    }
+
+    .challenge-list .challenge {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .challenge-list .challenge i {
+        font-size: 1.5rem;
+        color: var(--accent-color);
+    }
+
+    .leaderboard-item {
+        display: grid;
+        grid-template-columns: 30px 1fr auto;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .leaderboard-item .name {
+        font-weight: bold;
+    }
+
+    .leaderboard-item .points {
+        color: var(--primary-color);
+        font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-main {
+            padding: 1rem;
+            margin: 80px auto 80px auto;
+        }
+    }
+</style>
+<!-- Main Content -->
+<main class="min-h-screen mt-0">
+    <div class="dashboard-main">
         <!-- Dashboard Section -->
         <section id="dashboard" class="active-section">
-            <div class="dashboard-grid">
+            <div class="dashboard-grid ">
                 <!-- Progress Overview -->
                 <div class="card progress-card">
                     <h2>Your Progress</h2>
                     <div class="progress-stats">
                         <div class="stat">
                             <span class="label">Overall Progress</span>
-                            <div class="progress-bar">
+                            <div class="progress-bar" style="width: 50%;">
                                 <div class="progress" style="width: 75%">75%</div>
                             </div>
                         </div>
@@ -94,5 +176,6 @@
                 </div>
             </div>
         </section>
-    </main>
+    </div>
+</main>
 {{> footer}}

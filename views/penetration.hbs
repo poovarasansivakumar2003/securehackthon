@@ -1,106 +1,247 @@
 {{> header}}
 
-<main class="min-h-screen text-green-400 font-mono pt-20 pb-20 px-4">
-    <div id="game-container" class="max-w-5xl mx-auto">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-green-400 drop-shadow mb-2">Penetration Testing Simulator</h1>
-        </header>
+<style>
+    .penetration-main {
+        max-width: 900px;
+        margin: 100px auto 100px auto;
+        background: #23272a;
+        border-radius: 18px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+        padding: 2.5rem 2rem 2rem 2rem;
+    }
 
-        <div id="instructions-screen" class="game-section bg-[#2a2a2a] border border-green-400 rounded-xl p-6 mb-8">
-            <h2 class="text-2xl font-bold mb-4 text-green-400 drop-shadow">Mission Instructions</h2>
+    .game-section {
+        margin-bottom: 2rem;
+        background: #222;
+        border-radius: 14px;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.05);
+        border: 1.5px solid #00ff9d;
+        padding: 2rem 1.5rem;
+    }
 
-            <div class="instruction-section border-l-4 border-green-400 pl-4 mb-6">
-                <h3 class="text-lg font-semibold mb-2">1. Difficulty Levels</h3>
-                <p>Choose your mission difficulty:</p>
-                <ul class="list-disc list-inside text-green-300">
-                    <li><strong>Beginner:</strong> Basic reconnaissance tasks</li>
-                    <li><strong>Intermediate:</strong> Web exploitation challenges</li>
-                    <li><strong>Advanced:</strong> Full system compromise</li>
-                </ul>
+    .tool-card {
+        background: #181818;
+        border-radius: 10px;
+        border: 1.5px solid #00ff9d;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    button,
+    .game-section button {
+        background-color: #00ff9d;
+        color: #181818;
+        border: none;
+        padding: 12px 28px;
+        margin: 10px 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.2s;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.08);
+    }
+
+    button:hover,
+    .game-section button:hover {
+        background-color: #00e58c;
+        transform: translateY(-2px) scale(1.04);
+    }
+
+    .progress-bar {
+        background: #181818;
+        border-radius: 8px;
+        border: 1.5px solid #00ff9d;
+        height: 20px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+
+    .progress {
+        background: #00ff9d;
+        height: 100%;
+        color: #181818;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 8px;
+        transition: width 0.5s;
+    }
+
+    #output-log {
+        background: #181818;
+        border-radius: 8px;
+        border: 1.5px solid #00ff9d;
+        padding: 1rem;
+        min-height: 180px;
+        max-height: 400px;
+        overflow-y: auto;
+        color: #00ff9d;
+        font-size: 1rem;
+        font-family: inherit;
+        margin-bottom: 1rem;
+        white-space: pre-line;
+    }
+
+    .mission-summary {
+        background: #222;
+        border-radius: 10px;
+        padding: 1rem;
+        color: #fff;
+    }
+
+    .mission-summary .success {
+        color: #00ff9d;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .mission-summary ul {
+        margin: 0 0 1rem 1rem;
+        color: #00ff9d;
+    }
+
+    .mission-summary pre {
+        background: #181818;
+        border-radius: 8px;
+        padding: 1rem;
+        color: #00ff9d;
+        font-size: 0.95rem;
+        overflow-x: auto;
+    }
+
+    @media (max-width: 900px) {
+        .penetration-main {
+            max-width: 98vw;
+            padding: 1rem;
+        }
+
+        .game-section {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<main class="min-h-screen mt-0">
+    <div class="penetration-main">
+        <div id="game-container" class="max-w-5xl mx-auto">
+            <header class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-green-400 drop-shadow mb-2">Penetration Testing Simulator</h1>
+            </header>
+
+            <div id="instructions-screen" class="game-section bg-[#2a2a2a] border border-green-400 rounded-xl p-6 mb-8">
+                <h2 class="text-2xl font-bold mb-4 text-green-400 drop-shadow">Mission Instructions</h2>
+
+                <div class="instruction-section border-l-4 border-green-400 pl-4 mb-6">
+                    <h3 class="text-lg font-semibold mb-2">1. Difficulty Levels</h3>
+                    <p>Choose your mission difficulty:</p>
+                    <ul class="list-disc list-inside text-green-300">
+                        <li><strong>Beginner:</strong> Basic reconnaissance tasks</li>
+                        <li><strong>Intermediate:</strong> Web exploitation challenges</li>
+                        <li><strong>Advanced:</strong> Full system compromise</li>
+                    </ul>
+                </div>
+
+                <div class="instruction-section border-l-4 border-green-400 pl-4 mb-6">
+                    <h3 class="text-lg font-semibold mb-2">2. Available Tools</h3>
+                    <div class="tool-grid grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="tool-card border border-green-400 rounded-lg p-4 bg-[#1a1a1a]">
+                            <h4 class="font-bold mb-2">Beginner Tools:</h4>
+                            <ul class="text-green-300">
+                                <li>ping - Test connectivity</li>
+                                <li>nmap - Port scanning</li>
+                                <li>dirb - Directory discovery</li>
+                            </ul>
+                        </div>
+                        <div class="tool-card border border-green-400 rounded-lg p-4 bg-[#1a1a1a]">
+                            <h4 class="font-bold mb-2">Intermediate Tools:</h4>
+                            <ul class="text-green-300">
+                                <li>sqlmap - SQL injection testing</li>
+                                <li>xss-test - XSS vulnerability scanning</li>
+                                <li>burpsuite - Web traffic interception</li>
+                            </ul>
+                        </div>
+                        <div class="tool-card border border-green-400 rounded-lg p-4 bg-[#1a1a1a]">
+                            <h4 class="font-bold mb-2">Advanced Tools:</h4>
+                            <ul class="text-green-300">
+                                <li>metasploit - Exploitation framework</li>
+                                <li>privilege-escalation - Gain higher access</li>
+                                <li>backdoor - Establish persistence</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="instruction-section border-l-4 border-green-400 pl-4 mb-6">
+                    <h3 class="text-lg font-semibold mb-2">3. Understanding Output</h3>
+                    <div class="output-example bg-[#1a1a1a] rounded px-3 py-2 mb-2">[+] Success message</div>
+                    <div class="output-example bg-[#1a1a1a] rounded px-3 py-2 mb-2">[-] Error message</div>
+                    <div class="output-example bg-[#1a1a1a] rounded px-3 py-2 mb-2">[*] Status update</div>
+                    <div class="output-example bg-[#1a1a1a] rounded px-3 py-2 mb-2">[✓] Mission completion</div>
+                </div>
+
+                <div class="instruction-section border-l-4 border-green-400 pl-4 mb-6">
+                    <h3 class="text-lg font-semibold mb-2">4. Important Notes</h3>
+                    <ul class="list-disc list-inside text-green-300">
+                        <li>Tools must be used in the correct sequence</li>
+                        <li>Progress bar shows mission advancement</li>
+                        <li>"Complete Mission" unlocks after all steps</li>
+                        <li>Full mission log available in results</li>
+                    </ul>
+                </div>
+
+                <button onclick="startGame()"
+                    class="bg-green-400 text-gray-900 font-bold px-6 py-3 rounded-lg shadow hover:bg-green-500 transition-colors">Start
+                    Game</button>
             </div>
 
-            <div class="instruction-section border-l-4 border-green-400 pl-4 mb-6">
-                <h3 class="text-lg font-semibold mb-2">2. Available Tools</h3>
-                <div class="tool-grid grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="tool-card border border-green-400 rounded-lg p-4 bg-[#1a1a1a]">
-                        <h4 class="font-bold mb-2">Beginner Tools:</h4>
-                        <ul class="text-green-300">
-                            <li>ping - Test connectivity</li>
-                            <li>nmap - Port scanning</li>
-                            <li>dirb - Directory discovery</li>
-                        </ul>
-                    </div>
-                    <div class="tool-card border border-green-400 rounded-lg p-4 bg-[#1a1a1a]">
-                        <h4 class="font-bold mb-2">Intermediate Tools:</h4>
-                        <ul class="text-green-300">
-                            <li>sqlmap - SQL injection testing</li>
-                            <li>xss-test - XSS vulnerability scanning</li>
-                            <li>burpsuite - Web traffic interception</li>
-                        </ul>
-                    </div>
-                    <div class="tool-card border border-green-400 rounded-lg p-4 bg-[#1a1a1a]">
-                        <h4 class="font-bold mb-2">Advanced Tools:</h4>
-                        <ul class="text-green-300">
-                            <li>metasploit - Exploitation framework</li>
-                            <li>privilege-escalation - Gain higher access</li>
-                            <li>backdoor - Establish persistence</li>
-                        </ul>
-                    </div>
+            <div id="level-selector"
+                class="game-section bg-[#2a2a2a] border border-green-400 rounded-xl p-6 mb-8 hidden">
+                <h2 class="text-2xl font-bold mb-4 text-green-400 drop-shadow">Select Mission Difficulty</h2>
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <button onclick="startLevel('beginner')"
+                        class="bg-[#1a1a1a] border border-green-400 text-green-400 px-6 py-3 rounded-lg font-bold hover:bg-green-400 hover:text-gray-900 transition-colors">Beginner</button>
+                    <button onclick="startLevel('intermediate')"
+                        class="bg-[#1a1a1a] border border-green-400 text-green-400 px-6 py-3 rounded-lg font-bold hover:bg-green-400 hover:text-gray-900 transition-colors">Intermediate</button>
+                    <button onclick="startLevel('advanced')"
+                        class="bg-[#1a1a1a] border border-green-400 text-green-400 px-6 py-3 rounded-lg font-bold hover:bg-green-400 hover:text-gray-900 transition-colors">Advanced</button>
                 </div>
             </div>
 
-            <div class="instruction-section border-l-4 border-green-400 pl-4 mb-6">
-                <h3 class="text-lg font-semibold mb-2">3. Understanding Output</h3>
-                <div class="output-example bg-[#1a1a1a] rounded px-3 py-2 mb-2">[+] Success message</div>
-                <div class="output-example bg-[#1a1a1a] rounded px-3 py-2 mb-2">[-] Error message</div>
-                <div class="output-example bg-[#1a1a1a] rounded px-3 py-2 mb-2">[*] Status update</div>
-                <div class="output-example bg-[#1a1a1a] rounded px-3 py-2 mb-2">[✓] Mission completion</div>
+            <div id="mission-briefing"
+                class="game-section bg-[#2a2a2a] border border-green-400 rounded-xl p-6 mb-8 hidden">
+                <h2 class="text-2xl font-bold mb-4 text-green-400 drop-shadow">Mission Briefing</h2>
+                <p id="mission-text" class="mb-4"></p>
+                <div
+                    class="progress-bar w-full h-5 bg-[#1a1a1a] border border-green-400 rounded-full overflow-hidden mb-4">
+                    <div id="mission-progress" class="progress h-full bg-green-400 transition-all duration-500"
+                        style="width:0%"></div>
+                </div>
+                <button onclick="startMission()"
+                    class="bg-green-400 text-gray-900 font-bold px-6 py-3 rounded-lg shadow hover:bg-green-500 transition-colors">Start
+                    Mission</button>
             </div>
 
-            <div class="instruction-section border-l-4 border-green-400 pl-4 mb-6">
-                <h3 class="text-lg font-semibold mb-2">4. Important Notes</h3>
-                <ul class="list-disc list-inside text-green-300">
-                    <li>Tools must be used in the correct sequence</li>
-                    <li>Progress bar shows mission advancement</li>
-                    <li>"Complete Mission" unlocks after all steps</li>
-                    <li>Full mission log available in results</li>
-                </ul>
+            <div id="game-play-area"
+                class="game-section bg-[#1a1a1a] border border-green-400 rounded-xl p-6 mb-8 hidden">
+                <h2 class="text-2xl font-bold mb-4 text-green-400 drop-shadow">Active Mission</h2>
+                <div id="game-tools" class="flex flex-wrap gap-4 justify-center mb-4"></div>
+                <div id="game-output">
+                    <div id="output-log"
+                        class="bg-[#1a1a1a] border border-green-400 rounded p-4 min-h-[200px] max-h-[400px] overflow-y-auto text-green-300 text-sm">
+                    </div>
+                </div>
+                <button onclick="endMission()" id="end-mission-btn"
+                    class="bg-green-400 text-gray-900 font-bold px-6 py-3 rounded-lg shadow hover:bg-green-500 transition-colors mt-4"
+                    disabled>Complete Mission</button>
             </div>
 
-            <button onclick="startGame()" class="bg-green-400 text-gray-900 font-bold px-6 py-3 rounded-lg shadow hover:bg-green-500 transition-colors">Start Game</button>
-        </div>
-
-        <div id="level-selector" class="game-section bg-[#2a2a2a] border border-green-400 rounded-xl p-6 mb-8 hidden">
-            <h2 class="text-2xl font-bold mb-4 text-green-400 drop-shadow">Select Mission Difficulty</h2>
-            <div class="flex flex-wrap gap-4 justify-center">
-                <button onclick="startLevel('beginner')" class="bg-[#1a1a1a] border border-green-400 text-green-400 px-6 py-3 rounded-lg font-bold hover:bg-green-400 hover:text-gray-900 transition-colors">Beginner</button>
-                <button onclick="startLevel('intermediate')" class="bg-[#1a1a1a] border border-green-400 text-green-400 px-6 py-3 rounded-lg font-bold hover:bg-green-400 hover:text-gray-900 transition-colors">Intermediate</button>
-                <button onclick="startLevel('advanced')" class="bg-[#1a1a1a] border border-green-400 text-green-400 px-6 py-3 rounded-lg font-bold hover:bg-green-400 hover:text-gray-900 transition-colors">Advanced</button>
+            <div id="game-results" class="game-section bg-[#2a2a2a] border border-green-400 rounded-xl p-6 mb-8 hidden">
+                <h2 class="text-2xl font-bold mb-4 text-green-400 drop-shadow">Mission Results</h2>
+                <div id="results-text"></div>
+                <button onclick="restartGame()"
+                    class="bg-green-400 text-gray-900 font-bold px-6 py-3 rounded-lg shadow hover:bg-green-500 transition-colors mt-4">Start
+                    New Mission</button>
             </div>
-        </div>
-
-        <div id="mission-briefing" class="game-section bg-[#2a2a2a] border border-green-400 rounded-xl p-6 mb-8 hidden">
-            <h2 class="text-2xl font-bold mb-4 text-green-400 drop-shadow">Mission Briefing</h2>
-            <p id="mission-text" class="mb-4"></p>
-            <div class="progress-bar w-full h-5 bg-[#1a1a1a] border border-green-400 rounded-full overflow-hidden mb-4">
-                <div id="mission-progress" class="progress h-full bg-green-400 transition-all duration-500" style="width:0%"></div>
-            </div>
-            <button onclick="startMission()" class="bg-green-400 text-gray-900 font-bold px-6 py-3 rounded-lg shadow hover:bg-green-500 transition-colors">Start Mission</button>
-        </div>
-
-        <div id="game-play-area" class="game-section bg-[#1a1a1a] border border-green-400 rounded-xl p-6 mb-8 hidden">
-            <h2 class="text-2xl font-bold mb-4 text-green-400 drop-shadow">Active Mission</h2>
-            <div id="game-tools" class="flex flex-wrap gap-4 justify-center mb-4"></div>
-            <div id="game-output">
-                <div id="output-log" class="bg-[#1a1a1a] border border-green-400 rounded p-4 min-h-[200px] max-h-[400px] overflow-y-auto text-green-300 text-sm"></div>
-            </div>
-            <button onclick="endMission()" id="end-mission-btn" class="bg-green-400 text-gray-900 font-bold px-6 py-3 rounded-lg shadow hover:bg-green-500 transition-colors mt-4" disabled>Complete Mission</button>
-        </div>
-
-        <div id="game-results" class="game-section bg-[#2a2a2a] border border-green-400 rounded-xl p-6 mb-8 hidden">
-            <h2 class="text-2xl font-bold mb-4 text-green-400 drop-shadow">Mission Results</h2>
-            <div id="results-text"></div>
-            <button onclick="restartGame()" class="bg-green-400 text-gray-900 font-bold px-6 py-3 rounded-lg shadow hover:bg-green-500 transition-colors mt-4">Start New Mission</button>
         </div>
     </div>
 </main>
@@ -146,6 +287,8 @@
     let currentStep = 0;
     let outputLog = '';
     let hasSeenInstructions = false;
+    let gameStartTime = null;
+    let completedChallenges = [];
 
     function startGame() {
         document.getElementById('instructions-screen').classList.add('hidden');
@@ -159,6 +302,7 @@
     }
 
     function startLevel(level) {
+        gameStartTime = new Date();
         currentLevel = missions[level];
         currentStep = 0;
         document.getElementById('level-selector').classList.add('hidden');
@@ -229,6 +373,7 @@
     }
 
     function endMission() {
+        saveGameSession();
         document.getElementById('game-play-area').classList.add('hidden');
         document.getElementById('game-results').classList.remove('hidden');
 
@@ -247,6 +392,50 @@
             `;
 
         document.getElementById('results-text').innerHTML = resultsHtml;
+    }
+
+    async function saveGameSession() {
+        if (!gameStartTime || !currentLevel) return;
+        
+        const timeSpent = Math.floor((new Date() - gameStartTime) / 1000);
+        const score = currentStep * 100; // Score based on completed steps
+        
+        const gameData = {
+            difficulty: Object.keys(missions).find(key => missions[key] === currentLevel),
+            stepsCompleted: currentStep,
+            totalSteps: currentLevel.steps.length,
+            completionPercentage: (currentStep / currentLevel.steps.length) * 100
+        };
+
+        try {
+            const response = await fetch('/training/save-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    gameType: 'penetration',
+                    score: score,
+                    level: 1,
+                    timeSpent: timeSpent,
+                    completedChallenges: completedChallenges,
+                    gameData: gameData
+                })
+            });
+
+            if (response.status === 401) {
+                alert('Please sign in to save your progress');
+                window.location.href = '/auth/login';
+                return;
+            }
+
+            const result = await response.json();
+            if (result.success) {
+                console.log('Game session saved successfully');
+            }
+        } catch (error) {
+            console.error('Error saving game session:', error);
+        }
     }
 
     function restartGame() {

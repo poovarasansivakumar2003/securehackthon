@@ -1,36 +1,163 @@
 {{> header}}
 
-<main class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 pb-20 font-mono text-green-400">
-    <div class="game-container bg-[#2a2a2a] p-6 rounded-xl shadow-lg border border-green-400">
-        <h1 class="text-3xl font-bold text-green-400 text-center mb-6 pb-2 drop-shadow">Social Engineering Challenge</h1>
+<style>
+    .social-main {
+        max-width: 600px;
+        margin: 100px auto 100px auto;
+        background: #23272a;
+        border-radius: 16px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+        padding: 2.5rem 2rem 2rem 2rem;
+    }
 
-        <!-- Initial Screen -->
-        <div id="initial-screen">
-            <p class="text-center mb-4">Test your ability to detect social engineering attacks!</p>
-            <div class="attack-selection flex justify-center gap-6 mb-6">
-                <button onclick="selectMode('sms')" class="px-6 py-3 border-2 border-green-400 rounded-lg bg-[#1a1a1a] text-green-400 font-bold uppercase tracking-wider hover:bg-green-400 hover:text-black transition-all">SMS Attacks</button>
-                <button onclick="selectMode('audio')" class="px-6 py-3 border-2 border-green-400 rounded-lg bg-[#1a1a1a] text-green-400 font-bold uppercase tracking-wider hover:bg-green-400 hover:text-black transition-all">Audio Attacks</button>
-            </div>
-        </div>
+    .game-container {
+        background: #222;
+        border-radius: 14px;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.05);
+        border: 1.5px solid #00ff9d;
+        padding: 2rem 1.5rem;
+    }
 
-        <!-- Game Elements -->
-        <div id="game-elements" class="hidden">
-            <div id="message-box" class="message-box bg-green-950 p-6 rounded-lg border border-green-400 mb-4 shadow-inner"></div>
-            <div class="response-buttons flex justify-center gap-4 mb-4">
-                <button onclick="checkAnswer('malicious')" class="px-6 py-3 border-2 border-green-400 rounded-lg bg-[#1a1a1a] text-green-400 font-bold uppercase tracking-wider hover:bg-green-400 hover:text-black transition-all">Malicious</button>
-                <button onclick="checkAnswer('legitimate')" class="px-6 py-3 border-2 border-green-400 rounded-lg bg-[#1a1a1a] text-green-400 font-bold uppercase tracking-wider hover:bg-green-400 hover:text-black transition-all">Legitimate</button>
-            </div>
-            <div class="scoreboard text-center text-lg font-bold bg-green-950 border border-green-400 rounded-lg py-3 mb-4 shadow">
-                <div>Score: <span id="score">0</span></div>
-                <div>Timer: <span id="timer">30</span>s</div>
-            </div>
-        </div>
+    .attack-selection button,
+    .response-buttons button,
+    #results-screen button {
+        background-color: #00ff9d;
+        color: #181818;
+        border: none;
+        padding: 12px 28px;
+        margin: 10px 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.2s;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.08);
+    }
 
-        <!-- Results Screen -->
-        <div id="results-screen" class="hidden">
-            <h2 class="text-2xl font-bold text-green-400 text-center mb-4 border-b-2 border-green-400 pb-2 drop-shadow">Game Over!</h2>
-            <div id="final-score" class="mb-4"></div>
-            <button onclick="restartGame()" class="px-6 py-3 border-2 border-green-400 rounded-lg bg-black text-green-400 font-bold uppercase tracking-wider hover:bg-green-400 hover:text-black transition-all">Play Again</button>
+    .attack-selection button:hover,
+    .response-buttons button:hover,
+    #results-screen button:hover {
+        background-color: #00e58c;
+        color: #181818;
+        transform: translateY(-2px) scale(1.04);
+    }
+
+    .message-box {
+        background: #181818;
+        border-radius: 10px;
+        border: 1.5px solid #00ff9d;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        color: #00ff9d;
+        font-size: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.05);
+    }
+
+    .sms-message {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .audio-player {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .correct {
+        color: #00ff9d;
+        font-weight: bold;
+        margin-top: 0.5rem;
+    }
+
+    .incorrect {
+        color: #ff4444;
+        font-weight: bold;
+        margin-top: 0.5rem;
+    }
+
+    .scoreboard {
+        background: #181818;
+        border-radius: 8px;
+        border: 1.5px solid #00ff9d;
+        padding: 1rem;
+        color: #00ff9d;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.05);
+    }
+
+    #results-screen {
+        background: #222;
+        border-radius: 10px;
+        padding: 2rem 1rem;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.05);
+    }
+
+    #results-screen h2 {
+        color: #00ff9d;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 700px) {
+        .social-main {
+            max-width: 98vw;
+            padding: 1rem;
+        }
+
+        .game-container {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<main class="min-h-screen mt-0">
+    <div class="social-main">
+        <div class="game-container bg-[#2a2a2a] p-6 rounded-xl shadow-lg border border-green-400">
+            <h1 class="text-3xl font-bold text-green-400 text-center mb-6 pb-2 drop-shadow">Social Engineering Challenge
+            </h1>
+
+            <!-- Initial Screen -->
+            <div id="initial-screen">
+                <p class="text-center mb-4">Test your ability to detect social engineering attacks!</p>
+                <div class="attack-selection flex justify-center gap-6 mb-6">
+                    <button onclick="selectMode('sms')"
+                        class="px-6 py-3 border-2 border-green-400 rounded-lg bg-[#1a1a1a] text-green-400 font-bold uppercase tracking-wider hover:bg-green-400 hover:text-black transition-all">SMS
+                        Attacks</button>
+                    <button onclick="selectMode('audio')"
+                        class="px-6 py-3 border-2 border-green-400 rounded-lg bg-[#1a1a1a] text-green-400 font-bold uppercase tracking-wider hover:bg-green-400 hover:text-black transition-all">Audio
+                        Attacks</button>
+                </div>
+            </div>
+
+            <!-- Game Elements -->
+            <div id="game-elements" class="hidden">
+                <div id="message-box"
+                    class="message-box bg-green-950 p-6 rounded-lg border border-green-400 mb-4 shadow-inner"></div>
+                <div class="response-buttons flex justify-center gap-4 mb-4">
+                    <button onclick="checkAnswer('malicious')"
+                        class="px-6 py-3 border-2 border-green-400 rounded-lg bg-[#1a1a1a] text-green-400 font-bold uppercase tracking-wider hover:bg-green-400 hover:text-black transition-all">Malicious</button>
+                    <button onclick="checkAnswer('legitimate')"
+                        class="px-6 py-3 border-2 border-green-400 rounded-lg bg-[#1a1a1a] text-green-400 font-bold uppercase tracking-wider hover:bg-green-400 hover:text-black transition-all">Legitimate</button>
+                </div>
+                <div
+                    class="scoreboard text-center text-lg font-bold bg-green-950 border border-green-400 rounded-lg py-3 mb-4 shadow">
+                    <div>Score: <span id="score">0</span></div>
+                    <div>Timer: <span id="timer">30</span>s</div>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div id="results-screen" class="hidden">
+                <h2
+                    class="text-2xl font-bold text-green-400 text-center mb-4 border-b-2 border-green-400 pb-2 drop-shadow">
+                    Game Over!</h2>
+                <div id="final-score" class="mb-4"></div>
+                <button onclick="restartGame()"
+                    class="px-6 py-3 border-2 border-green-400 rounded-lg bg-black text-green-400 font-bold uppercase tracking-wider hover:bg-green-400 hover:text-black transition-all">Play
+                    Again</button>
+            </div>
         </div>
     </div>
 </main>
@@ -42,6 +169,9 @@
     let timer = 30;
     let currentScenario = null;
     let timerInterval;
+    let gameStartTime = null;
+    let questionsAnswered = 0;
+    let correctAnswers = 0;
 
     // Scenarios database
     const smsScenarios = [
@@ -104,8 +234,11 @@
     }
 
     function startGame() {
+        gameStartTime = new Date();
         score = 0;
         timer = 30;
+        questionsAnswered = 0;
+        correctAnswers = 0;
         updateScore();
         startTimer();
         showNextScenario();
@@ -131,11 +264,13 @@
     }
 
     function checkAnswer(answer) {
+        questionsAnswered++;
         const isCorrect = (answer === 'malicious' && currentScenario.type === 'malicious') ||
             (answer === 'legitimate' && currentScenario.type === 'legitimate');
 
         if (isCorrect) {
             score += 10;
+            correctAnswers++;
             updateScore();
         }
 
@@ -169,9 +304,54 @@
 
     function endGame() {
         clearInterval(timerInterval);
+        saveGameSession();
         document.getElementById('game-elements').classList.add('hidden');
         document.getElementById('results-screen').classList.remove('hidden');
         document.getElementById('final-score').textContent = `Final Score: ${score}`;
+    }
+
+    async function saveGameSession() {
+        if (!gameStartTime) return;
+        
+        const timeSpent = Math.floor((new Date() - gameStartTime) / 1000);
+        const accuracy = questionsAnswered > 0 ? (correctAnswers / questionsAnswered * 100) : 0;
+        
+        const gameData = {
+            mode: currentMode,
+            questionsAnswered: questionsAnswered,
+            correctAnswers: correctAnswers,
+            accuracy: accuracy
+        };
+
+        try {
+            const response = await fetch('/training/save-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    gameType: 'socialEngineering',
+                    score: score,
+                    level: 1,
+                    timeSpent: timeSpent,
+                    completedChallenges: [`${currentMode}_completed`],
+                    gameData: gameData
+                })
+            });
+
+            if (response.status === 401) {
+                alert('Please sign in to save your progress');
+                window.location.href = '/auth/login';
+                return;
+            }
+
+            const result = await response.json();
+            if (result.success) {
+                console.log('Game session saved successfully');
+            }
+        } catch (error) {
+            console.error('Error saving game session:', error);
+        }
     }
 
     function restartGame() {

@@ -1,15 +1,21 @@
 {{> header}}
 
 <style>
-    body {
-        margin: 0;
-        font-family: 'Courier New', monospace;
+    .cyber-main {
+        max-width: 1000px;
+        margin: 100px auto 100px auto;
+        background: #2a2a2a;
+        border-radius: 18px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+        padding: 2.5rem 2rem 2rem 2rem;
     }
 
     .dashboard {
         border: 2px solid #00ff9d;
-        padding: 40px;
-        border-radius: 5px;
+        background: #222;
+        border-radius: 14px;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.05);
+        padding: 2rem 1.5rem;
         margin-bottom: 20px;
     }
 
@@ -21,20 +27,26 @@
     }
 
     .node {
-        background-color: #1a1a1a;
-        border: 1px solid #00ff9d;
+        background-color: #181818;
+        border: 2px solid #00ff9d;
         padding: 20px;
         text-align: center;
         cursor: pointer;
-        transition: all 0.3s;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: box-shadow 0.2s, border-color 0.2s, background 0.2s;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.05);
     }
 
     .node:hover {
-        background-color: #1a1a1a;
+        background-color: #23272a;
+        box-shadow: 0 0 10px #00ff9d;
     }
 
     .node.infected {
-        border-color: #ff0000;
+        border-color: #ff4444;
+        box-shadow: 0 0 10px #ff4444;
         animation: pulse 1s infinite;
     }
 
@@ -42,19 +54,25 @@
         display: flex;
         gap: 10px;
         margin-bottom: 20px;
+        justify-content: center;
     }
 
     button {
-        background-color: #1a1a1a;
-        color: #00ff9d;
-        border: 1px solid #00ff9d;
-        padding: 10px 20px;
+        background-color: #00ff9d;
+        color: #181818;
+        border: none;
+        padding: 12px 28px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 8px;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: background 0.2s, transform 0.2s;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.08);
     }
 
     button:hover {
-        background-color: #004d00;
+        background-color: #00e58c;
+        transform: translateY(-2px) scale(1.04);
     }
 
     .stats {
@@ -65,9 +83,14 @@
     }
 
     .stat-box {
-        border: 1px solid #00ff9d;
-        padding: 10px;
+        border: 1.5px solid #00ff9d;
+        background: #181818;
+        border-radius: 8px;
+        padding: 1rem;
         text-align: center;
+        color: #00ff9d;
+        font-size: 1.1rem;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.05);
     }
 
     @keyframes pulse {
@@ -84,101 +107,117 @@
         }
     }
 
-    .alert {
-        background-color: #1a1a1a;
-        border: 1px solid #00ff9d;
-        padding: 10px;
+    .alert,
+    #hintBox {
+        background-color: #181818;
+        border: 1.5px solid #00ff9d;
+        border-radius: 8px;
+        padding: 1rem;
         margin: 10px 0;
+        color: #00ff9d;
+        font-size: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.05);
         display: none;
     }
 
     .terminal {
-        background-color: #1a1a1a;
-        border: 1px solid #00ff9d;
-        padding: 10px;
+        background-color: #181818;
+        border: 1.5px solid #00ff9d;
+        border-radius: 8px;
+        padding: 1rem;
         height: 150px;
         overflow-y: auto;
-        font-family: monospace;
+        font-family: inherit;
         margin-top: 20px;
-    }
-
-    #hintBox {
-        background-color: #1a1a1a;
-        border: 1px solid #00ff9d;
-        padding: 10px;
-        margin: 10px 0;
         color: #00ff9d;
-        display: none;
+        font-size: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 255, 157, 0.05);
     }
 
     h1 {
         text-align: center;
-        margin: 30px;
-        padding 20px;
-        font-size: 40px;
+        margin: 30px 0 20px 0;
+        font-size: 2.5rem;
         color: #00ff9d;
-        text-shadow: 0 0 5px #00ff9d;
+        text-shadow: 0 0 8px #00ff9d;
+        font-weight: bold;
+        letter-spacing: 2px;
+    }
+
+    @media (max-width: 900px) {
+        .cyber-main {
+            max-width: 98vw;
+            padding: 1rem;
+        }
+
+        .dashboard {
+            padding: 1rem;
+        }
+
+        .network-map {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .stats {
+            grid-template-columns: 1fr 1fr;
+        }
     }
 </style>
 
+<main class="min-h-screen mt-0">
+    <div class="cyber-main">
+        <h1 class="mb-10">🛡️ Cyber Defense Station</h1>
+        <div class="dashboard">
+            <div class="alert" id="hintBox">Hint: Start by scanning the network for any vulnerabilities!</div>
+            <div class="stats">
+                <div class="stat-box">
+                    <h3>Score</h3>
+                    <div id="score">0</div>
+                </div>
+                <div class="stat-box">
+                    <h3>Threats Detected</h3>
+                    <div id="threats">0</div>
+                </div>
+                <div class="stat-box">
+                    <h3>System Health</h3>
+                    <div id="health">100%</div>
+                </div>
+                <div class="stat-box">
+                    <h3>Level</h3>
+                    <div id="level">1</div>
+                </div>
+            </div>
+            <div class="controls">
+                <button onclick="startGame()">Start Mission</button>
+                <button onclick="scanNetwork()">Scan Network</button>
+                <button onclick="deployFirewall()">Deploy Firewall</button>
+            </div>
+            <div class="alert" id="alert"></div>
 
+            <div class="network-map" id="network">
+                <div class="node">Node 1</div>
+                <div class="node">Node 2</div>
+                <div class="node">Node 3</div>
+                <div class="node">Node 4</div>
+                <div class="node">Node 5</div>
+                <div class="node">Node 6</div>
+                <div class="node">Node 7</div>
+                <div class="node">Node 8</div>
+                <div class="node">Node 9</div>
+                <div class="node">Node 10</div>
+                <div class="node">Node 11</div>
+                <div class="node">Node 12</div>
+                <div class="node">Node 13</div>
+                <div class="node">Node 14</div>
+                <div class="node">Node 15</div>
+            </div>
 
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-    <h1 >🛡️ Cyber Defense Station</h1>
-    <div class="dashboard">
-        <div class="alert" id="hintBox">Hint: Start by scanning the network for any vulnerabilities!</div>
-        <div class="stats">
-            <div class="stat-box">
-                <h3>Score</h3>
-                <div id="score">0</div>
-            </div>
-            <div class="stat-box">
-                <h3>Threats Detected</h3>
-                <div id="threats">0</div>
-            </div>
-            <div class="stat-box">
-                <h3>System Health</h3>
-                <div id="health">100%</div>
-            </div>
-            <div class="stat-box">
-                <h3>Level</h3>
-                <div id="level">1</div>
-            </div>
+            <div class="terminal" id="terminal"></div>
         </div>
-
-        <div class="controls">
-            <button onclick="startGame()">Start Mission</button>
-            <button onclick="scanNetwork()">Scan Network</button>
-            <button onclick="deployFirewall()">Deploy Firewall</button>
-        </div>
-
-        <div class="alert" id="alert"></div>
-
-        <div class="network-map" id="network">
-            <div class="node">Node 1</div>
-            <div class="node">Node 2</div>
-            <div class="node">Node 3</div>
-            <div class="node">Node 4</div>
-            <div class="node">Node 5</div>
-            <div class="node">Node 6</div>
-            <div class="node">Node 7</div>
-            <div class="node">Node 8</div>
-            <div class="node">Node 9</div>
-            <div class="node">Node 10</div>
-            <div class="node">Node 11</div>
-            <div class="node">Node 12</div>
-            <div class="node">Node 13</div>
-            <div class="node">Node 14</div>
-            <div class="node">Node 15</div>
-        </div>
-
-        <div class="terminal" id="terminal"></div>
     </div>
 </main>
 
 <script>
-
     let score = 0;
     let threats = 0;
     let health = 100;
@@ -186,8 +225,11 @@
     let gameInterval;
     let threatInterval = 2000;
     let nodes = [];
+    let gameStartTime = null;
+    let completedChallenges = [];
 
     function startGame() {
+        gameStartTime = new Date();
         clearInterval(gameInterval);
         initializeNetwork();
         score = 0;
@@ -242,8 +284,22 @@
         updateStats();
     }
 
+    function updateStats() {
+        document.getElementById('score').textContent = score;
+        document.getElementById('threats').textContent = threats;
+        document.getElementById('health').textContent = `${health}%`;
+        document.getElementById('level').textContent = level;
+
+        if (health <= 0) {
+            clearInterval(gameInterval);
+            logToTerminal('❌ Mission failed! System compromise detected.');
+            saveGameSession();
+        }
+    }
+
     function levelUp() {
         level++;
+        completedChallenges.push(`level_${level}`);
         threatInterval -= 200; // Increase difficulty by reducing interval
         if (threatInterval < 500) {
             threatInterval = 500; // Set a lower limit to avoid too frequent threats
@@ -255,19 +311,56 @@
         scheduleThreats(); // Reschedule threats at a faster rate
     }
 
-    function updateStats() {
-        document.getElementById('score').textContent = score;
-        document.getElementById('threats').textContent = threats;
-        document.getElementById('health').textContent = `${health}%`;
-        document.getElementById('level').textContent = level;
+    // Save game session to backend
+    async function saveGameSession() {
+        if (!gameStartTime) return;
+        
+        const timeSpent = Math.floor((new Date() - gameStartTime) / 1000);
+        
+        const gameData = {
+            finalHealth: health,
+            threatsNeutralized: threats,
+            finalLevel: level,
+            gameMode: 'cyber-defense'
+        };
 
-        if (health <= 0) {
-            clearInterval(gameInterval);
-            logToTerminal('❌ Mission failed! System compromise detected.');
+        try {
+            const response = await fetch('/training/save-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    gameType: 'cyberGame',
+                    score: score,
+                    level: level,
+                    timeSpent: timeSpent,
+                    completedChallenges: completedChallenges,
+                    gameData: gameData
+                })
+            });
+
+            if (response.status === 401) {
+                alert('Please sign in to save your progress');
+                window.location.href = '/auth/login';
+                return;
+            }
+
+            const result = await response.json();
+            if (result.success) {
+                console.log('Game session saved successfully');
+            }
+        } catch (error) {
+            console.error('Error saving game session:', error);
         }
     }
 
-
+    // Auto-save every 30 seconds during gameplay
+    setInterval(() => {
+        if (gameStartTime && health > 0) {
+            saveGameSession();
+        }
+    }, 30000);
 
     function showHint(message) {
         const hintBox = document.getElementById('hintBox');

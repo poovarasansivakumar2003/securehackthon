@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 
 mongoose.connect(process.env.MONGODB_URI);
 
-// User Schema and Model
 const LoginSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -84,8 +83,46 @@ const postSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
+// Game Session Schema
+const gameSessionSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Authentication', required: true },
+    userName: { type: String, required: true },
+    gameType: { 
+        type: String, 
+        required: true,
+        enum: ['cyberGame', 'architecture', 'exploit', 'penetration', 'socialEngineering']
+    },
+    score: { type: Number, default: 0 },
+    level: { type: Number, default: 1 },
+    timeSpent: { type: Number, default: 0 }, // in seconds
+    completedChallenges: [{ type: String }],
+    gameData: { type: mongoose.Schema.Types.Mixed }, // Store specific game state
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
+
+// User Progress Schema
+const userProgressSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Authentication', required: true },
+    userName: { type: String, required: true },
+    totalScore: { type: Number, default: 0 },
+    gamesPlayed: { type: Number, default: 0 },
+    highScores: {
+        cyberGame: { type: Number, default: 0 },
+        architecture: { type: Number, default: 0 },
+        exploit: { type: Number, default: 0 },
+        penetration: { type: Number, default: 0 },
+        socialEngineering: { type: Number, default: 0 }
+    },
+    achievements: [{ type: String }],
+    lastPlayed: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now }
+});
+
 const CommunityPost = mongoose.model('CommunityPost', postSchema);
 const User = mongoose.model('Authentication', LoginSchema);
 const Helpline = mongoose.model('Helpline', HelplineSchema);
+const GameSession = mongoose.model('GameSession', gameSessionSchema);
+const UserProgress = mongoose.model('UserProgress', userProgressSchema);
 
-module.exports = { User, Helpline, CommunityPost };
+module.exports = { User, Helpline, CommunityPost, GameSession, UserProgress };
